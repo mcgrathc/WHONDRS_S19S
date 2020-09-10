@@ -7,16 +7,35 @@ workspace_path <- "C:\\Users\\mcgr323\\OneDrive - PNNL\\Documents\\WHONDRS\\Tran
 #read in csv
 trans_matrix <- read.csv(file.path(workspace_path,"S19S_Wat-Sed_8.12_Trans_Profiles.csv"))
 
-#count the unique sample names in the trans matrix
-unique_sample_names <- length(unique(names(trans_matrix[3:ncol(trans_matrix)])))
-
+#create an empty dataframe for the relative abundances 
 rel_abund <- data.frame(matrix(NA, nrow = nrow(trans_matrix), ncol = (ncol(trans_matrix)-2)))
 
 #get the relative abundance of the transformation
 rel_abund <-as.data.frame(sapply(names(trans_matrix[3:ncol(trans_matrix)]), function(x) {
-  trans_matrix[paste0(x, "_rel_abud")] <<- trans_matrix[x] / sum(trans_matrix[x])
+  trans_matrix[x] / sum(trans_matrix[x])
 }))
 
-#add two columns (transformation name, mass) to relative abunance 
+#add two columns (transformation name, mass) to relative abundance 
 trans_rel_abun <- cbind(trans_matrix[1:2],rel_abund)
 
+#get rid of the duplicate column names from sapply function 
+names(trans_rel_abun) <- names(trans_matrix)
+
+#create dataframe of unique sample names 
+unique_sample_names <- as.data.frame(unique(names(trans_matrix[3:ncol(trans_matrix)])))
+
+#spilt sample names by "_"
+temp <- strsplit(unique_sample_names[,1], '_')
+
+#create dataframe of separated values 
+max_length <- max(sapply(temp,length))
+temp2 <- as.data.frame(t(sapply(temp, function(x){
+  c(x, rep(NA, max_length - length(x)))
+})))
+
+temp2$sediment <- temp2 %>% filter_all(any_vars(. %in% c('Sed')))
+
+temp2 %>% 
+  mutate(sediment = 1/2)
+
+temp2$sediment <- lapply(temp2, function(x) {grep("Sed",temp2)} )
