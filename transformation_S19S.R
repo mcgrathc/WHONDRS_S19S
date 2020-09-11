@@ -27,15 +27,23 @@ unique_sample_names <- as.data.frame(unique(names(trans_matrix[3:ncol(trans_matr
 #spilt sample names by "_"
 temp <- strsplit(unique_sample_names[,1], '_')
 
-#create dataframe of separated values 
+#create dataframe of separated values  
 max_length <- max(sapply(temp,length))
 temp2 <- as.data.frame(t(sapply(temp, function(x){
   c(x, rep(NA, max_length - length(x)))
 })))
 
-temp2$sediment <- temp2 %>% filter_all(any_vars(. %in% c('Sed')))
+#make new columns for spatial location, sample type, and site ID 
+dat.extended <- temp2 %>% 
+  mutate(Spatial_location = case_when(temp2[,4] == "ICR.1" ~ 1,
+                          temp2[,4] == "ICR.2" ~ 2,
+                          temp2[,4] == "ICR.3" ~ 3,
+                          temp2[,6] == "ICR.U" ~ 4, #upstream
+                          temp2[,6] == "ICR.M" ~ 5, #midstream
+                          temp2[,6] == "ICR.D" ~ 6),#downstream
+         Sample_type = ifelse(temp2[,4] == "Sed", "sediment", "surface water"),
+         Site_ID = temp2[,3])
 
-temp2 %>% 
-  mutate(sediment = 1/2)
+sample_desc <- cbind(unique_sample_names[,1], dat.extended[,8:10])
 
-temp2$sediment <- lapply(temp2, function(x) {grep("Sed",temp2)} )
+
