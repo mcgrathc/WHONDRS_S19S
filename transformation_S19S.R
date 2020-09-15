@@ -1,3 +1,5 @@
+library(dplyr)
+
 #set working directory
 setwd("C:\\Users\\mcgr323\\OneDrive - PNNL\\Documents\\WHONDRS\\Transformation")
 
@@ -44,6 +46,31 @@ dat.extended <- temp2 %>%
          Sample_type = ifelse(temp2[,4] == "Sed", "sediment", "surface water"),
          Site_ID = temp2[,3])
 
+#create the sample mapping file
 sample_desc <- cbind(unique_sample_names[,1], dat.extended[,8:10])
+
+#transpose the relative abundance data
+trans <- t(trans_rel_abun[3:length(trans_rel_abun)])
+
+#create a dataframe with the combined mappng file and the transpose relative abundance data
+combine <- cbind(sample_desc, trans)
+names(combine)[5:length(combine)] <- trans_rel_abun$Name
+
+#clean up the combined data
+clean_combine <- combine[2:length(combine)]
+
+#create the surface water dataframe
+surface_water <- clean_combine %>% filter(Sample_type == "surface water")
+
+#create the sediment dataframe 
+sediment <- clean_combine %>% filter(Sample_type == "sediment")
+
+#get the mean from the surface water data by site
+surface_water_mean <- aggregate(surface_water[,4:length(surface_water)], list(surface_water$Site_ID), mean)
+
+#get the mean from the sediment data by site
+sediment_mean <- aggregate(sediment[,4:length(surface_water)], list(sediment$Site_ID), mean)
+
+
 
 
