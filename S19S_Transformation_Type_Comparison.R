@@ -6,9 +6,11 @@ library(reshape2) # For the melting capability
 library(ggplot2) # For for prettiers graphs
 library(ggthemes) # For different color palettes
 library(ggpubr) # For combining plots (amongst other functions)
+library(dplyr)
 
 # Load in data
 setwd("C:/Users/mcgr323/OneDrive - PNNL/Documents/WHONDRS/Transformation/")
+results <- "C:/Users/mcgr323/OneDrive - PNNL/Documents/WHONDRS/Transformation/"
 trans = read.csv("S19S_Wat-Sed_8.12_Trans_Profiles.csv", row.names = 1)
 
 # Cleaning up the transformation profile
@@ -78,23 +80,12 @@ amino_mean <- amino.trans %>%
   group_by(ID, Type) %>% 
   summarise_each(funs(mean))
 
-ggplot(data = amino_mean, aes(x = Type, y = value, group = Type))+
-  geom_boxplot(aes(color = Type))+
-  labs(title="Ammonia acid Transformations",x="Sample Type", y = "Relative Abundance")+
-  scale_color_stata()+
-  hori_x_theme
-
-# Bulk amino acid comparison
-amino.trans = as.data.frame(t(trans[grep(paste(amino, collapse = "|"), row.names(trans), ignore.case = T),]))
-amino.trans = as.data.frame(rowSums(amino.trans)); colnames(amino.trans) = "value"
-amino.trans$Type = factors$Type
-amino.trans$ID = factors$ID
-amino.trans$Location = factors$Location
-
-ggplot(data = amino.trans, aes(x = Type, y = value, group = Type))+
-  geom_boxplot(aes(color = Type))+
-  scale_color_stata()+
-  hori_x_theme
+# # Bulk amino acid comparison
+# amino.trans = as.data.frame(t(trans[grep(paste(amino, collapse = "|"), row.names(trans), ignore.case = T),]))
+# amino.trans = as.data.frame(rowSums(amino.trans)); colnames(amino.trans) = "value"
+# amino.trans$Type = factors$Type
+# amino.trans$ID = factors$ID
+# amino.trans$Location = factors$Location
 
 # Looking at all N-based transformations
 # N-based transformations (with AAs)
@@ -109,17 +100,10 @@ N.trans = N.trans[-to.remove,]
 CHO.remove = row.names(N.trans)
 
 N.trans = melt(N.trans, id.vars = c("Type", "ID"))
-N_mean <- aggregate(N.trans$value, list(N.trans$ID, mean)
-                    
+
 N_mean <- N.trans %>%
   group_by(ID, Type) %>% 
   summarise_each(funs(mean))
-
-ggplot(data = N_mean, aes(x = Type, y = value, group = Type))+
-  geom_boxplot(aes(color = Type))+
-  labs(title="Nitrogen Transformations",x="Sample Type", y = "Relative Abundance")+
-  scale_color_stata()+
-  hori_x_theme
 
 # S-transformations
 S.trans = as.data.frame(t(trans[grep("S|Cysteine|Cystine|glutathi|Methionine|co-enzyme|biotinyl|sulfate", 
@@ -138,11 +122,6 @@ S_mean <- S.trans %>%
   group_by(ID, Type) %>% 
   summarise_each(funs(mean))
 
-ggplot(data = S_mean, aes(x = Type, y = value, group = Type))+
-  geom_boxplot(aes(color = Type))+
-  scale_color_stata()+
-  hori_x_theme
-
 # P-transformations
 P.trans = as.data.frame(t(trans[grep("P|co-enzyme|phosphate|Phosphate|adenylate", 
                                      row.names(trans), ignore.case = T),]))
@@ -159,61 +138,72 @@ P_mean <- P.trans %>%
   group_by(ID, Type) %>% 
   summarise_each(funs(mean))
 
-ggplot(data = P_mean, aes(x = Type, y = value, group = Type))+
-  geom_boxplot(aes(color = Type))+
-  scale_color_stata()+
-  hori_x_theme
-
 # Non-NSP transformations
 CHO = trans
 to.remove = which(row.names(CHO) %in% CHO.remove)
 to.remove = c(to.remove, grep("Cl|Na|N/A", row.names(CHO))) # Removing transformations with chloride, sodium, or that are ambiguous
 CHO = CHO[-to.remove,]
-CHO = CHO[grep("C|A|a|e", row.names(CHO)),] # Selecting those transformtions which are carbon containing
+CHO.trans = as.data.frame(t(CHO[grep("C|A|a|e", row.names(CHO)),])) # Selecting those transformtions which are carbon containing
+CHO.trans$Type = factors$Type
+CHO.trans$ID = factors$ID
+CHO.trans$Location = factors$Location
 
-CHO = data.frame(Sample = colnames(CHO), CHO = colSums(CHO), Type = factors$Type)
+CHO.trans = melt(CHO.trans, id.vars = c("Type", "ID"))
 
-CHO.plot = ggplot(data = CHO, aes(x = Type, y = CHO))+
-  geom_boxplot(aes(color = Type))+
-  xlab(NULL)+
-  ylab("Non-Nutrient Trans. (%)")+
-  hori_x_theme
-
-CHO.plot
+CHO_mean <- CHO.trans %>%
+  group_by(ID, Type) %>% 
+  summarise_each(funs(mean))
 
 # Hydrogen transformations
 OH = trans
 OH = OH[-to.remove,]
-OH = OH[-grep("C|A|a|e|P", row.names(OH)),] # Selecting those transformtions which are O/H, but not C containing
+OH.trans = as.data.frame(t(OH[-grep("C|A|a|e|P", row.names(OH)),])) # Selecting those transformtions which are O/H, but not C containing
+OH.trans$Type = factors$Type
+OH.trans$ID = factors$ID
+OH.trans$Location = factors$Location
 
-OH = data.frame(Sample = colnames(OH), OH = colSums(OH), Type = factors$Type)
+OH.trans = melt(OH.trans, id.vars = c("Type", "ID"))
 
-OH.plot = ggplot(data = OH, aes(x = Type, y = OH))+
-  geom_boxplot(aes(color = Type))+
-  xlab(NULL)+
-  ylab("O/H Trans. (%)")+
-  hori_x_theme
+OH_mean <- OH.trans %>%
+  group_by(ID, Type) %>% 
+  summarise_each(funs(mean))
 
-OH.plot
 
-# Combining plots
-ggarrange(CHO.plot, N.plot, S.plot, P.plot)
+site.graph <- function(df, na.rm = TRUE, ...){
+  site_list <- unique(df$ID)
+  setwd("C:/Users/mcgr323/OneDrive - PNNL/Documents/WHONDRS/Transformation/")
+  # create for loop to produce ggplot2 graphs 
+  for (i in seq_along(site_list)) { 
+    # create plot for each county in df 
+    site_plots <- ggplot(data = df, aes(x = Type, y = value))+
+      geom_boxplot(aes(color = Type))+
+      labs(x="Sample Type", y = "Relative Abundance")+
+      scale_color_stata()+
+      ggtitle("Site", paste( site_list[i]))+
+      hori_x_theme
+    ggsave(site_plots,filename=paste("Site",site_list[i],".png",sep=""))
+  } 
+}
 
-### Calculating stats
-stats = wilcox.test(CHO~Type, data = CHO)
-stats = data.frame(Comparison = "CHO", MWU.stat = stats$statistic, p.value = stats$p.value)
 
-temp = wilcox.test(N~Type, data = N)
-stats = rbind(stats, 
-              data.frame(Comparison = "N", MWU.stat = temp$statistic, p.value = temp$p.value))
-
-temp = wilcox.test(S~Type, data = S)
-stats = rbind(stats, 
-              data.frame(Comparison = "S", MWU.stat = temp$statistic, p.value = temp$p.value))
-
-temp = wilcox.test(P~Type, data = P)
-stats = rbind(stats, 
-              data.frame(Comparison = "P", MWU.stat = temp$statistic, p.value = temp$p.value))
-
-stats$p.value = p.adjust(stats$p.value, method = "fdr")
-stats$p.value = round(stats$p.value, digits = 4)
+# # Combining plots
+# ggarrange(CHO.plot, N.plot, S.plot, P.plot)
+# 
+# ### Calculating stats
+# stats = wilcox.test(CHO~Type, data = CHO)
+# stats = data.frame(Comparison = "CHO", MWU.stat = stats$statistic, p.value = stats$p.value)
+# 
+# temp = wilcox.test(N~Type, data = N)
+# stats = rbind(stats, 
+#               data.frame(Comparison = "N", MWU.stat = temp$statistic, p.value = temp$p.value))
+# 
+# temp = wilcox.test(S~Type, data = S)
+# stats = rbind(stats, 
+#               data.frame(Comparison = "S", MWU.stat = temp$statistic, p.value = temp$p.value))
+# 
+# temp = wilcox.test(P~Type, data = P)
+# stats = rbind(stats, 
+#               data.frame(Comparison = "P", MWU.stat = temp$statistic, p.value = temp$p.value))
+# 
+# stats$p.value = p.adjust(stats$p.value, method = "fdr")
+# stats$p.value = round(stats$p.value, digits = 4)
