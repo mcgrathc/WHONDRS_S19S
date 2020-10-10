@@ -69,21 +69,23 @@ amino = c("alanine", "arginine", "asparagine", "aspartic acid",
           "serine", "theronine", "tryptophan",
           "tyrosine", "valine")
 
+#reformat dataframe
 amino.trans = as.data.frame(trans[grep(paste(amino, collapse = "|"), row.names(trans), ignore.case = T),])
 amino_acid = data.frame(Sample = colnames(amino.trans), value = colSums(amino.trans), Type = factors$Type, ID = factors$ID)
 amino_acid$ID= as.numeric(as.character(amino_acid$ID))
 
-for (i in amino_acid$ID) { 
-  sub_data <- subset(amino_acid, ID == i)
-  AA.plot = ggplot(data = sub_data, aes(x = Type, y = value))+
-    geom_boxplot(aes(color = Type))+
-    xlab(NULL)+
-    scale_y_continuous(limits=c(0,1))+
-    ylab("Amino Acid Trans. (%)")+
-    hori_x_theme+
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
-  ggsave(AA.plot,filename=paste("Amino_Site",i,".png",sep=""))
-}
+
+# for (i in amino_acid$ID) { 
+#   sub_data <- subset(amino_acid, ID == i)
+#   AA.plot = ggplot(data = sub_data, aes(x = Type, y = value))+
+#     geom_boxplot(aes(color = Type))+
+#     xlab(NULL)+
+#     scale_y_continuous(limits=c(0,1))+
+#     ylab("Amino Acid Trans. (%)")+
+#     hori_x_theme+
+#     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+#   ggsave(AA.plot,filename=paste("Amino_Site",i,".png",sep=""))
+# }
 
 # Looking at all N-based transformations
 # N-based transformations (with AAs)
@@ -97,17 +99,17 @@ CHO.remove = row.names(N.trans)
 N = data.frame(Sample = colnames(N.trans), value = colSums(N.trans), Type = factors$Type, ID = factors$ID)
 N$ID= as.numeric(as.character(N$ID))
 
-for (i in N$ID) { 
-  sub_data <- subset(N, ID == i)
-  N.plot = ggplot(data = sub_data, aes(x = Type, y = value))+
-    geom_boxplot(aes(color = Type))+
-    xlab(NULL)+
-    scale_y_continuous(limits=c(4,28))+
-    ylab("N Trans. (%)")+
-    hori_x_theme+
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
-  ggsave(N.plot,filename=paste("N_Site",i,".png",sep=""))
-}
+# for (i in N$ID) { 
+#   sub_data <- subset(N, ID == i)
+#   N.plot = ggplot(data = sub_data, aes(x = Type, y = value))+
+#     geom_boxplot(aes(color = Type))+
+#     xlab(NULL)+
+#     scale_y_continuous(limits=c(4,28))+
+#     ylab("N Trans. (%)")+
+#     hori_x_theme+
+#     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+#   ggsave(N.plot,filename=paste("N_Site",i,".png",sep=""))
+# }
 
 # S-transformations
 S.trans = as.data.frame(trans[grep("S|Cysteine|Cystine|glutathi|Methionine|co-enzyme|biotinyl|sulfate", 
@@ -119,17 +121,17 @@ CHO.remove = c(CHO.remove, row.names(S.trans))
 S = data.frame(Sample = colnames(S.trans), value = colSums(S.trans), Type = factors$Type, ID = factors$ID)
 S$ID= as.numeric(as.character(S$ID))
 
-for (i in S$ID) { 
-  sub_data <- subset(S, ID == i)
-  S.plot = ggplot(data = sub_data, aes(x = Type, y = value))+
-    geom_boxplot(aes(color = Type))+
-    xlab(NULL)+
-    scale_y_continuous(limits=c(0,5))+
-    ylab("S Trans. (%)")+
-    hori_x_theme+
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
-  ggsave(S.plot,filename=paste("S_Site",i,".png",sep=""))
-}
+# for (i in S$ID) { 
+#   sub_data <- subset(S, ID == i)
+#   S.plot = ggplot(data = sub_data, aes(x = Type, y = value))+
+#     geom_boxplot(aes(color = Type))+
+#     xlab(NULL)+
+#     scale_y_continuous(limits=c(0,5))+
+#     ylab("S Trans. (%)")+
+#     hori_x_theme+
+#     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+#   ggsave(S.plot,filename=paste("S_Site",i,".png",sep=""))
+# }
 
 # P-transformations
 P.trans = as.data.frame(trans[grep("P|co-enzyme|phosphate|Phosphate|adenylate", 
@@ -142,17 +144,17 @@ CHO.remove = c(CHO.remove, row.names(P.trans))
 P = data.frame(Sample = colnames(P.trans), value = colSums(P.trans), Type = factors$Type, ID = factors$ID)
 P$ID= as.numeric(as.character(P$ID))
 
-for (i in P$ID) { 
-  sub_data <- subset(P, ID == i)
-  P.plot = ggplot(data = sub_data, aes(x = Type, y = value))+
-    geom_boxplot(aes(color = Type))+
-    xlab(NULL)+
-    scale_y_continuous(limits=c(0,3))+
-    ylab("P Trans. (%)")+
-    hori_x_theme+
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
-  ggsave(P.plot,filename=paste("P_Site",i,".png",sep=""))
-}
+# for (i in P$ID) { 
+#   sub_data <- subset(P, ID == i)
+#   P.plot = ggplot(data = sub_data, aes(x = Type, y = value))+
+#     geom_boxplot(aes(color = Type))+
+#     xlab(NULL)+
+#     scale_y_continuous(limits=c(0,3))+
+#     ylab("P Trans. (%)")+
+#     hori_x_theme+
+#     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+#   ggsave(P.plot,filename=paste("P_Site",i,".png",sep=""))
+# }
 
 # Non-NSP transformations
 CHO = trans
@@ -163,17 +165,17 @@ CHO.trans = as.data.frame(CHO[grep("C|A|a|e", row.names(CHO)),]) # Selecting tho
 CHO = data.frame(Sample = colnames(CHO.trans), value = colSums(CHO.trans), Type = factors$Type, ID = factors$ID)
 CHO$ID= as.numeric(as.character(CHO$ID))
 
-for (i in CHO$ID) { 
-  sub_data <- subset(CHO, ID == i)
-  CHO.plot = ggplot(data = sub_data, aes(x = Type, y = value))+
-    geom_boxplot(aes(color = Type))+
-    xlab(NULL)+
-    scale_y_continuous(limits=c(50,85))+
-    ylab("CHO Trans. (%)")+
-    hori_x_theme+
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
-  ggsave(CHO.plot,filename=paste("CHO_Site",i,".png",sep=""))
-}
+# for (i in CHO$ID) { 
+#   sub_data <- subset(CHO, ID == i)
+#   CHO.plot = ggplot(data = sub_data, aes(x = Type, y = value))+
+#     geom_boxplot(aes(color = Type))+
+#     xlab(NULL)+
+#     scale_y_continuous(limits=c(50,85))+
+#     ylab("CHO Trans. (%)")+
+#     hori_x_theme+
+#     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+#   ggsave(CHO.plot,filename=paste("CHO_Site",i,".png",sep=""))
+# }
 
 
 # Hydrogen transformations
@@ -183,72 +185,69 @@ OH.trans = as.data.frame(OH[-grep("C|A|a|e|P", row.names(OH)),]) # Selecting tho
 OH = data.frame(Sample = colnames(OH.trans), value = colSums(OH.trans), Type = factors$Type, ID = factors$ID)
 OH$ID= as.numeric(as.character(OH$ID))
 
-for (i in OH$ID) { 
-  sub_data <- subset(OH, ID == i)
-OH.plot = ggplot(data = sub_data, aes(x = Type, y = value))+
-  geom_boxplot(aes(color = Type))+
-  xlab(NULL)+
-  scale_y_continuous(limits=c(9,30))+
-  ylab("O/H Trans. (%)")+
-  hori_x_theme+
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
-ggsave(OH.plot,filename=paste("OH_Site",i,".png",sep=""))
-}
+# for (i in OH$ID) { 
+#   sub_data <- subset(OH, ID == i)
+# OH.plot = ggplot(data = sub_data, aes(x = Type, y = value))+
+#   geom_boxplot(aes(color = Type))+
+#   xlab(NULL)+
+#   scale_y_continuous(limits=c(9,30))+
+#   ylab("O/H Trans. (%)")+
+#   hori_x_theme+
+#   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+# ggsave(OH.plot,filename=paste("OH_Site",i,".png",sep=""))
+# }
 
+##Derive the difference in means for sample types##
+#get means for each transformation type 
+amino_mean <- amino_acid %>%
+  group_by(ID, Type) %>% 
+  summarise_each(funs(mean))
+N_mean <- N %>%
+  group_by(ID, Type) %>% 
+  summarise_each(funs(mean))
+P_mean <- P %>%
+  group_by(ID, Type) %>% 
+  summarise_each(funs(mean))
+S_mean <- S %>%
+  group_by(ID, Type) %>% 
+  summarise_each(funs(mean))
+CHO_mean <- CHO %>%
+  group_by(ID, Type) %>% 
+  summarise_each(funs(mean))
+OH_mean <- OH %>%
+  group_by(ID, Type) %>% 
+  summarise_each(funs(mean))
 
-site.graph <- function(df, na.rm = TRUE, ...){
-  site_list <- unique(df$ID)
-  setwd("C:/Users/mcgr323/OneDrive - PNNL/Documents/WHONDRS/Transformation/")
-  # create for loop to produce ggplot2 graphs 
-  for (i in seq_along(site_list)) { 
-    sub_data <- subset(df, ID == "i")
-    # create plot for each county in df 
-    site_plots <- ggplot(data = df, aes(x = Type, y = value))+
-      geom_boxplot(aes(color = Type))+
-      labs(x="Type", y = "Relative Abundance (%)")+
-      scale_color_stata()+
-      ggtitle("Site", paste( site_list[i]))+
-      hori_x_theme
-    ggsave(site_plots,filename=paste("Site",site_list[i],".png",sep=""))
-  } 
-}
+#get the difference between the means for the sample types
+amino_diff <- as.data.frame(amino_mean %>%
+  group_by(ID) %>%
+  summarise(diff = (value[Type == 'surface water'] - value[Type == 'sediment'])[1]))
+N_diff <- as.data.frame(N_mean %>%
+  group_by(ID) %>%
+  summarise(diff = (value[Type == 'surface water'] - value[Type == 'sediment'])[1]))
+P_diff <- as.data.frame(P_mean %>%
+  group_by(ID) %>%
+  summarise(diff = (value[Type == 'surface water'] - value[Type == 'sediment'])[1]))
+S_diff <- as.data.frame(S_mean %>%
+  group_by(ID) %>%
+  summarise(diff = (value[Type == 'surface water'] - value[Type == 'sediment'])[1]))
+CHO_diff <- as.data.frame(CHO_mean %>%
+  group_by(ID) %>%
+  summarise(diff = (value[Type == 'surface water'] - value[Type == 'sediment'])[1]))
+OH_diff <- as.data.frame(OH_mean %>%
+  group_by(ID) %>%
+  summarise(diff = (value[Type == 'surface water'] - value[Type == 'sediment'])[1]))
 
+#add the transformation type column to each dataframe
+amino_diff$trans_type <- 'amino acid'
+N_diff$trans_type <- 'N'
+P_diff$trans_type <- 'P'
+S_diff$trans_type <- 'S'
+CHO_diff$trans_type <- 'CHO'
+OH_diff$trans_type <- 'OH'
 
-  site_list <- unique(df$ID)
-  setwd("C:/Users/mcgr323/OneDrive - PNNL/Documents/WHONDRS/Transformation/")
-  # create for loop to produce ggplot2 graphs 
-  for (i in seq_along(site_list)) { 
-    # create plot for each county in df 
-    sub_data <- subset(df, ID == "i")
-    site_plots <- ggplot(data = sub_data, aes(x = Type, y = value))+
-      geom_boxplot(aes(color = Type))+
-      labs(x="Sample Type", y = "Relative Abundance")+
-      scale_color_stata()+
-      ggtitle("Site", paste( site_list[i]))+
-      hori_x_theme
-    ggsave(site_plots,filename=paste("Site",site_list[i],".png",sep=""))
-  } 
+#bind the transfromation diff of means datasets together
+trans_diff <- rbind(amino_diff,N_diff,P_diff,S_diff,CHO_diff,OH_diff)
 
-
-
-# # Combining plots
-# ggarrange(CHO.plot, N.plot, S.plot, P.plot)
-# 
-# ### Calculating stats
-# stats = wilcox.test(CHO~Type, data = CHO)
-# stats = data.frame(Comparison = "CHO", MWU.stat = stats$statistic, p.value = stats$p.value)
-# 
-# temp = wilcox.test(N~Type, data = N)
-# stats = rbind(stats, 
-#               data.frame(Comparison = "N", MWU.stat = temp$statistic, p.value = temp$p.value))
-# 
-# temp = wilcox.test(S~Type, data = S)
-# stats = rbind(stats, 
-#               data.frame(Comparison = "S", MWU.stat = temp$statistic, p.value = temp$p.value))
-# 
-# temp = wilcox.test(P~Type, data = P)
-# stats = rbind(stats, 
-#               data.frame(Comparison = "P", MWU.stat = temp$statistic, p.value = temp$p.value))
-# 
-# stats$p.value = p.adjust(stats$p.value, method = "fdr")
-# stats$p.value = round(stats$p.value, digits = 4)
+library(rio)
+export(trans_diff, "S19S_Transformation_Mean_Difference.csv")
