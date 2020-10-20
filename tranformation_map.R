@@ -198,74 +198,182 @@ ggsave(aa_plot,filename="Amino_difference.png")
 
 ##Create bivariate plots for lat/ long separately with associated regression models ##
 ##### Install and load packages
-install.packages("plotly")
-install.packages("tidyverse")
-install.packages("htmlwidgets")
-library(plotly)
-library(tidyverse)
-library(htmlwidgets)
+
+trans_ll.us <- trans_ll.us %>% mutate(group = case_when(
+              CHO > 5 & Longitude > -123 ~ 1,
+              CHO > 5 & Longitude < -123 ~ 2,
+              CHO < 5  ~ 2 ))
 ##phosphorus 
-aa_lat_biv <- ggplot(trans_ll.us, aes(y=P, x=Latitude)) +
-  geom_point(size=4) +
+p_lat_biv <- ggplot(trans_ll.us, aes(y=P, x=Latitude)) +
+  geom_point(aes(colour = factor(group)), size=4) +
+  scale_colour_manual(values = c("orange","grey"))+
   geom_smooth(method=lm) +
   labs(y = "Relative abundance difference (%)", 
   title = "Phosphorus Latitude") +
-  stat_cor(label.x = 40, label.y = 0.35) +
+  stat_cor(aes(label = paste(..rr.label.., ..p.label.., sep = "~`,`~")),
+    label.x = 40, label.y = 0.35) +
   stat_regline_equation(label.x = 40, label.y = 0.3)+
-  theme_bw() + theme(plot.background=element_blank())
+  theme_bw() + theme(plot.background=element_blank())+
+  theme(legend.position = "none") 
 #  ggsave(aa_lat_biv,filename="Amino_Lat_Regression.png")
 
-aa_long_biv <- ggplot(trans_ll.us, aes(y=P, x=Longitude)) +
+p_long_biv <- ggplot(trans_ll.us, aes(y=P, x=Longitude)) +
   geom_point(size=4) +
+  geom_point(aes(colour = factor(group)), size=4) +
+  scale_colour_manual(values = c("orange","grey"))+
   geom_smooth(method=lm, color = "red") +
   labs(y = "Relative abundance difference (%)", 
        title = "Phosphorus Longitude") +
-  stat_cor(label.x = -90, label.y = 0.35) +
+  stat_cor(aes(label = paste(..rr.label.., ..p.label.., sep = "~`,`~")),
+    label.x = -90, label.y = 0.35) +
   stat_regline_equation(label.x = -90, label.y = 0.3)+
-  theme_bw() + theme(plot.background=element_blank())
+  theme_bw() + theme(plot.background=element_blank())+
+  theme(legend.position = "none") 
+
+library("gridExtra")
+grid.arrange(p_lat_biv,p_long_biv,
+             ncol = 2, nrow = 1)
 
 ##Amino acids
 aa_lat_biv <- ggplot(trans_ll.us, aes(y=amino.acid, x=Latitude)) +
-  geom_point(size=4) +
+  geom_point(aes(colour = factor(group)), size=4) +
+  scale_colour_manual(values = c("orange","grey"))+
   geom_smooth(method=lm) +
   labs(y = "Relative abundance difference (%)", 
        title = "Amino acids Latitude") +
-  stat_cor(label.x = 40, label.y = 0.4) +
+  stat_cor(aes(label = paste(..rr.label.., ..p.label.., sep = "~`,`~")),
+    label.x = 40, label.y = 0.4) +
   stat_regline_equation(label.x = 40, label.y = 0.35)+
-  theme_bw() + theme(plot.background=element_blank())
+  theme_bw() + theme(plot.background=element_blank())+
+  theme(legend.position = "none") 
 
 aa_long_biv <- ggplot(trans_ll.us, aes(y=amino.acid, x=Longitude)) +
-  geom_point(size=4) +
+  geom_point(aes(colour = factor(group)), size=4) +
+  scale_colour_manual(values = c("orange","grey"))+
   geom_smooth(method=lm, color = "red") +
   labs(y = "Relative abundance difference (%)", 
        title = "Amino acids Longitude") +
-  stat_cor(label.x = -90, label.y = 0.4) +
+  stat_cor(aes(label = paste(..rr.label.., ..p.label.., sep = "~`,`~")),
+    label.x = -90, label.y = 0.4) +
   stat_regline_equation(label.x = -90, label.y = 0.35)+
-  theme_bw() + theme(plot.background=element_blank())
+  theme_bw() + theme(plot.background=element_blank())+
+  theme(legend.position = "none") 
 
-library("gridExtra")
   grid.arrange(aa_lat_biv,aa_long_biv,
                ncol = 2, nrow = 1)
 
-  ##N 
-  aa_lat_biv <- ggplot(trans_ll.us, aes(y=OH, x=Latitude)) +
-    geom_point(size=4) +
+  ##OH 
+  oh_lat_biv <- ggplot(trans_ll.us, aes(y=OH, x=Latitude)) +
+    geom_point(aes(colour = factor(group)), size=4) +
+    scale_colour_manual(values = c("orange","grey"))+
     geom_smooth(method=lm) +
     labs(y = "Relative abundance difference (%)", 
          title = "OH Latitude") +
-    stat_cor(label.x = 40, label.y = 1.25) +
+    stat_cor( aes(label = paste(..rr.label.., ..p.label.., sep = "~`,`~")), 
+             label.x = 40, label.y = 1.25) +
     stat_regline_equation(label.x = 40, label.y = 1)+
-    theme_bw() + theme(plot.background=element_blank())
+    theme_bw() + theme(plot.background=element_blank())+
+    theme(legend.position = "none") 
   
-  aa_long_biv <- ggplot(trans_ll.us, aes(y=OH, x=Longitude)) +
-    geom_point(size=4) +
+  oh_long_biv <- ggplot(trans_ll.us, aes(y=OH, x=Longitude)) +
+    geom_point(aes(colour = factor(group)), size=4) +
+    scale_colour_manual(values = c("orange","grey"))+
     geom_smooth(method=lm, color = "red") +
     labs(y = "Relative abundance difference (%)", 
          title = "OH Longitude") +
-    stat_cor(label.x = -90, label.y = 1.25) +
+    stat_cor(aes(label = paste(..rr.label.., ..p.label.., sep = "~`,`~")),
+      label.x = -90, label.y = 1.25) +
     stat_regline_equation(label.x = -90, label.y = 1)+
-    theme_bw() + theme(plot.background=element_blank())
+    theme_bw() + theme(plot.background=element_blank())+
+    theme(legend.position = "none") 
   
   library("gridExtra")
-  grid.arrange(aa_lat_biv,aa_long_biv,
+  grid.arrange(oh_lat_biv,oh_long_biv,
+               ncol = 2, nrow = 1)
+  
+  ##CHO 
+  cho_lat_biv <- ggplot(trans_ll.us, aes(y=CHO, x=Latitude)) +
+    geom_point(aes(colour = factor(group)), size=4) +
+    scale_colour_manual(values = c("orange","grey"))+
+    geom_smooth(method=lm) +
+    labs(y = "Relative abundance difference (%)", 
+         title = "CHO Latitude") +
+    stat_cor( aes(label = paste(..rr.label.., ..p.label.., sep = "~`,`~")), 
+              label.x = 40, label.y = 15) +
+    stat_regline_equation(label.x = 40, label.y = 14)+
+    theme_bw() + theme(plot.background=element_blank())+
+    theme(legend.position = "none") 
+  
+  cho_long_biv <- ggplot(trans_ll.us, aes(y=CHO, x=Longitude)) +
+    geom_point(aes(colour = factor(group)), size=4) +
+    scale_colour_manual(values = c("orange","grey"))+
+    geom_smooth(method=lm, color = "red") +
+    labs(y = "Relative abundance difference (%)", 
+         title = "CHO Longitude") +
+    stat_cor(aes(label = paste(..rr.label.., ..p.label.., sep = "~`,`~")),
+             label.x = -90, label.y = 15) +
+    stat_regline_equation(label.x = -90, label.y = 14)+
+    theme_bw() + theme(plot.background=element_blank())+
+    theme(legend.position = "none") 
+  
+  library("gridExtra")
+  grid.arrange(cho_lat_biv,cho_long_biv,
+               ncol = 2, nrow = 1)
+  
+  ##N
+  N_lat_biv <- ggplot(trans_ll.us, aes(y=N, x=Latitude)) +
+    geom_point(aes(colour = factor(group)), size=4) +
+    scale_colour_manual(values = c("orange","grey"))+
+    geom_smooth(method=lm) +
+    labs(y = "Relative abundance difference (%)", 
+         title = "Nitrogen Latitude") +
+    stat_cor( aes(label = paste(..rr.label.., ..p.label.., sep = "~`,`~")), 
+              label.x = 40, label.y = 8) +
+    stat_regline_equation(label.x = 40, label.y = 7.5)+
+    theme_bw() + theme(plot.background=element_blank())+
+    theme(legend.position = "none") 
+  
+  N_long_biv <- ggplot(trans_ll.us, aes(y=N, x=Longitude)) +
+    geom_point(aes(colour = factor(group)), size=4) +
+    scale_colour_manual(values = c("orange","grey"))+
+    geom_smooth(method=lm, color = "red") +
+    labs(y = "Relative abundance difference (%)", 
+         title = "Nitrogen Longitude") +
+    stat_cor(aes(label = paste(..rr.label.., ..p.label.., sep = "~`,`~")),
+             label.x = -90, label.y = 8) +
+    stat_regline_equation(label.x = -90, label.y = 7.5)+
+    theme_bw() + theme(plot.background=element_blank())+
+    theme(legend.position = "none") 
+  
+  library("gridExtra")
+  grid.arrange(N_lat_biv,N_long_biv,
+               ncol = 2, nrow = 1)
+  
+  ##S
+  S_lat_biv <- ggplot(trans_ll.us, aes(y=S, x=Latitude)) +
+    geom_point(aes(colour = factor(group)), size=4) +
+    scale_colour_manual(values = c("orange","grey"))+
+    geom_smooth(method=lm) +
+    labs(y = "Relative abundance difference (%)", 
+         title = "Sulfur Latitude") +
+    stat_cor( aes(label = paste(..rr.label.., ..p.label.., sep = "~`,`~")), 
+              label.x = 40, label.y = 1.5) +
+    stat_regline_equation(label.x = 40, label.y = 1.25)+
+    theme_bw() + theme(plot.background=element_blank())+
+    theme(legend.position = "none") 
+  
+  S_long_biv <- ggplot(trans_ll.us, aes(y=S, x=Longitude)) +
+    geom_point(aes(colour = factor(group)), size=4) +
+    scale_colour_manual(values = c("orange","grey"))+
+    geom_smooth(method=lm, color = "red") +
+    labs(y = "Relative abundance difference (%)", 
+         title = "Sulfur Longitude") +
+    stat_cor(aes(label = paste(..rr.label.., ..p.label.., sep = "~`,`~")),
+             label.x = -90, label.y = 1.5) +
+    stat_regline_equation(label.x = -90, label.y = 1.25)+
+    theme_bw() + theme(plot.background=element_blank())+
+    theme(legend.position = "none") 
+  
+  library("gridExtra")
+  grid.arrange(S_lat_biv,S_long_biv,
                ncol = 2, nrow = 1)
