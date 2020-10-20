@@ -239,15 +239,54 @@ OH_diff <- as.data.frame(OH_mean %>%
   summarise(diff = (value[Type == 'surface water'] - value[Type == 'sediment'])[1]))
 
 #add the transformation type column to each dataframe
-amino_diff$trans_type <- 'amino acid'
-N_diff$trans_type <- 'N'
-P_diff$trans_type <- 'P'
-S_diff$trans_type <- 'S'
-CHO_diff$trans_type <- 'CHO'
-OH_diff$trans_type <- 'OH'
+# amino_diff %>% rename(amino.acid = diff)
+# N_diff %>% rename(N = diff)
+# P_diff %>% rename(P = diff)
+# S_diff %>% rename(S = diff)
+# CHO_diff %>% rename(CHO = diff)
+# OH_diff %>% rename(OH = diff)
 
-#bind the transfromation diff of means datasets together
-trans_diff <- rbind(amino_diff,N_diff,P_diff,S_diff,CHO_diff,OH_diff)
+trans_diff  <-as.data.frame(cbind(amino_diff$ID,amino_diff$diff, N_diff$diff,P_diff$diff,
+                                  S_diff$diff,CHO_diff$diff,OH_diff$diff))
+
+colnames(trans_diff) <- c("ID", "amino.acid", "N", "P", "S", "CHO", "OH")
+
+# Change colors
+library(ggplot2)
+aa <- ggplot(amino_diff, aes(x=diff))+
+  geom_histogram(color="black", fill="white",bins = 10)+
+  #facet_grid(trans_type ~ .)+
+  xlab("Difference (surface water - sediment)") 
+n <- ggplot(N_diff, aes(x=diff))+
+  geom_histogram(color="black", fill="white",bins = 10)+
+  facet_grid(trans_type ~ .)+
+  xlab("Difference (surface water - sediment)")
+p <- ggplot(P_diff, aes(x=diff))+
+  geom_histogram(color="black", fill="white",bins = 10)+
+  facet_grid(trans_type ~ .)+
+  xlab("Difference (surface water - sediment)")
+s <-ggplot(S_diff, aes(x=diff))+
+  geom_histogram(color="black", fill="white",bins = 10)+
+  facet_grid(trans_type ~ .)+
+  xlab("Difference (surface water - sediment)")
+oh <- ggplot(OH_diff, aes(x=diff))+
+  geom_histogram(color="black", fill="white",bins = 10)+
+  facet_grid(trans_type ~ .)+
+  xlab("Difference (surface water - sediment)")
+cho <- ggplot(CHO_diff, aes(x=diff))+
+  geom_histogram(color="black", fill="white",bins = 10)+
+  facet_grid(trans_type ~ .)+
+  xlab("Difference (surface water - sediment)")
+
+library("gridExtra")
+grid.arrange(aa,n,p,s,oh,cho, 
+             ncol = 3, nrow = 2)
+
+trans_diff  <-as.data.frame(cbind(amino_diff$ID,amino_diff$diff, N_diff$diff,P_diff$diff,
+                                  S_diff$diff,CHO_diff$diff,OH_diff$diff))
+
+colnames(trans_diff) <- c("ID", "amino.acid", "N", "P", "S", "CHO", "OH")
+
 
 library(rio)
-export(trans_diff, "S19S_Transformation_Mean_Difference.csv")
+export(trans_diff, "S19S_Transformation_Mean_Difference_2.csv")
